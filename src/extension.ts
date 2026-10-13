@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import * as vscode from 'vscode';
 import {
@@ -25,7 +26,22 @@ export function activate(context: vscode.ExtensionContext) {
     return;
   }
 
-  const serverModule = context.asAbsolutePath(path.join('dist', 'language-server.js'));
+  const configuredServerPath = vscode.workspace
+    .getConfiguration('steiger')
+    .get<string>('languageServerPath', '');
+
+  let serverModule = context.asAbsolutePath(path.join('dist', 'language-server.js'));
+  if (configuredServerPath) {
+    const customServerModule = path.isAbsolute(configuredServerPath)
+      ? configuredServerPath
+      : path.join(root, configuredServerPath);
+    if (existsSync(customServerModule)) {
+      serverModule = customServerModule;
+    } else {
+      output.appendLine(`steiger.languageServerPath does not exist: ${customServerModule}; using the bundled server`);
+    }
+  }
+  output.appendLine(`starting steiger language server using "${serverModule}"`);
 
   const serverOptions: ServerOptions = {
     run: { module: serverModule, transport: TransportKind.stdio },

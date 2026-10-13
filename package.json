@@ -65,6 +65,12 @@
           ],
           "default": "off",
           "description": "Traces the communication between VS Code and the language server."
+        },
+        "steiger.languageServerPath": {
+          "scope": "resource",
+          "type": "string",
+          "default": "",
+          "description": "Path to a custom language server module used instead of the bundled one. Relative paths are resolved against the workspace root. Leave empty to use the bundled server."
         }
       }
     }
