@@ -13,7 +13,7 @@ declare const PRODUCTION: boolean;
 let client: LanguageClient;
 
 export function activate(context: vscode.ExtensionContext) {
-  const output = vscode.window.createOutputChannel('steiger');
+  const output = vscode.window.createOutputChannel('steiger', { log: true });
   if (!PRODUCTION) {
     output.show(true);
   }
@@ -61,6 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
       { scheme: 'file', language: 'svelte' },
       { scheme: 'file', language: 'astro' },
     ],
+    outputChannel: output,
   };
 
   client = new LanguageClient(
