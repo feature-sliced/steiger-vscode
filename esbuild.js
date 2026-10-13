@@ -22,7 +22,8 @@ const esbuildProblemMatcherPlugin = {
 async function main() {
   const ctx = await esbuild.context({
     entryPoints: [
-      'src/extension.ts'
+      'src/extension.ts',
+      'src/langauge-server.ts',
     ],
     bundle: true,
     format: 'cjs',
@@ -30,7 +31,7 @@ async function main() {
     sourcemap: false,
     sourcesContent: false,
     platform: 'node',
-    outfile: 'dist/extension.js',
+    outdir: 'dist',
     external: ['vscode'],
     define: {
       PRODUCTION: production ? 'true' : 'false',

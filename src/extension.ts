@@ -1,6 +1,4 @@
-import { existsSync } from 'node:fs';
 import path from 'node:path';
-
 import * as vscode from 'vscode';
 import {
   LanguageClient,
@@ -27,11 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
     return;
   }
 
-  const serverModule = path.join(root, 'node_modules', 'steiger', 'dist', 'language-server.mjs');
-  if (!existsSync(serverModule)) {
-    output.appendLine(`server module not found: ${serverModule}`);
-    return;
-  }
+  const serverModule = context.asAbsolutePath(path.join('dist', 'langauge-server.js'));
 
   const serverOptions: ServerOptions = {
     run: { module: serverModule, transport: TransportKind.stdio },
@@ -60,7 +54,6 @@ export function activate(context: vscode.ExtensionContext) {
     clientOptions
   );
 
-  output.appendLine(`starting steiger language server using "${serverModule}"`);
   client.start().catch(err => {
     output.appendLine(`Failed to start steiger language server: ${err}`);
   });
