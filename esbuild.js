@@ -23,7 +23,7 @@ async function main() {
   const ctx = await esbuild.context({
     entryPoints: [
       'src/extension.ts',
-      'src/langauge-server.ts',
+      'src/language-server.ts',
     ],
     bundle: true,
     format: 'cjs',

@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
     return;
   }
 
-  const serverModule = context.asAbsolutePath(path.join('dist', 'langauge-server.js'));
+  const serverModule = context.asAbsolutePath(path.join('dist', 'language-server.js'));
 
   const serverOptions: ServerOptions = {
     run: { module: serverModule, transport: TransportKind.stdio },
