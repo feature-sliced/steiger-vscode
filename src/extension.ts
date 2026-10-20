@@ -48,7 +48,8 @@ export function activate(context: vscode.ExtensionContext) {
     debug: {
       module: serverModule,
       transport: TransportKind.stdio,
-    }
+      options: { execArgv: ['--nolazy', '--inspect=6009'] },
+    },
   };
 
   const clientOptions: LanguageClientOptions = {
@@ -62,6 +63,7 @@ export function activate(context: vscode.ExtensionContext) {
       { scheme: 'file', language: 'astro' },
     ],
     outputChannel: output,
+    traceOutputChannel: output,
   };
 
   client = new LanguageClient(
@@ -71,8 +73,33 @@ export function activate(context: vscode.ExtensionContext) {
     clientOptions
   );
 
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration(event => {
+      if (event.affectsConfiguration('steiger.languageServerPath')) {
+        void vscode.window
+          .showInformationMessage(
+            'Steiger language server path changed. Reload the window to apply it.',
+            'Reload Window'
+          )
+          .then(choice => {
+            if (choice === 'Reload Window') {
+              void vscode.commands.executeCommand('workbench.action.reloadWindow');
+            }
+          });
+      }
+    })
+  );
+
   client.start().catch(err => {
-    output.appendLine(`Failed to start steiger language server: ${err}`);
+    const message = `Failed to start steiger language server: ${err instanceof Error ? err.message : String(err)}`;
+    output.appendLine(message);
+    void vscode.window
+      .showErrorMessage(message, 'Show Output')
+      .then(choice => {
+        if (choice === 'Show Output') {
+          output.show();
+        }
+      });
   });
 }
 

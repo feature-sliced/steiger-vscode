@@ -42,7 +42,9 @@
     "onLanguage:vue",
     "onLanguage:svelte",
     "onLanguage:astro",
-    "workspaceContains:**/steiger.config.{ts,js,mjs,cjs}"
+    "workspaceContains:**/steiger.config.{ts,js,mjs,cjs}",
+    "workspaceContains:**/.steigerrc*",
+    "workspaceContains:**/.config/steigerrc*"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -51,10 +53,21 @@
       "title": "Steiger",
       "properties": {
         "steiger.languageServerPath": {
-          "scope": "resource",
+          "scope": "window",
           "type": "string",
           "default": "",
           "description": "Path to a custom language server module used instead of the bundled one. Relative paths are resolved against the workspace root. Leave empty to use the bundled server."
+        },
+        "steiger.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the steiger language server."
         }
       }
     }
@@ -74,7 +87,7 @@
     "typescript-eslint": "^8.61.1"
   },
   "dependencies": {
-    "minimatch": "^10.2.6",
+    "@feature-sliced/language-server": "^0.2.0",
     "vscode-languageclient": "^10.1.0"
   }
 }
