@@ -1,6 +1,5 @@
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-
 import * as vscode from 'vscode';
 import {
   LanguageClient,
@@ -14,7 +13,7 @@ declare const PRODUCTION: boolean;
 let client: LanguageClient;
 
 export function activate(context: vscode.ExtensionContext) {
-  const output = vscode.window.createOutputChannel('steiger');
+  const output = vscode.window.createOutputChannel('steiger', { log: true });
   if (!PRODUCTION) {
     output.show(true);
   }
@@ -27,18 +26,30 @@ export function activate(context: vscode.ExtensionContext) {
     return;
   }
 
-  const serverModule = path.join(root, 'node_modules', 'steiger', 'dist', 'language-server.mjs');
-  if (!existsSync(serverModule)) {
-    output.appendLine(`server module not found: ${serverModule}`);
-    return;
+  const configuredServerPath = vscode.workspace
+    .getConfiguration('steiger')
+    .get<string>('languageServerPath', '');
+
+  let serverModule = context.asAbsolutePath(path.join('dist', 'language-server.js'));
+  if (configuredServerPath) {
+    const customServerModule = path.isAbsolute(configuredServerPath)
+      ? configuredServerPath
+      : path.join(root, configuredServerPath);
+    if (existsSync(customServerModule)) {
+      serverModule = customServerModule;
+    } else {
+      output.appendLine(`steiger.languageServerPath does not exist: ${customServerModule}; using the bundled server`);
+    }
   }
+  output.appendLine(`starting steiger language server using "${serverModule}"`);
 
   const serverOptions: ServerOptions = {
     run: { module: serverModule, transport: TransportKind.stdio },
     debug: {
       module: serverModule,
       transport: TransportKind.stdio,
-    }
+      options: { execArgv: ['--nolazy', '--inspect=6009'] },
+    },
   };
 
   const clientOptions: LanguageClientOptions = {
@@ -51,6 +62,8 @@ export function activate(context: vscode.ExtensionContext) {
       { scheme: 'file', language: 'svelte' },
       { scheme: 'file', language: 'astro' },
     ],
+    outputChannel: output,
+    traceOutputChannel: output,
   };
 
   client = new LanguageClient(
@@ -60,9 +73,33 @@ export function activate(context: vscode.ExtensionContext) {
     clientOptions
   );
 
-  output.appendLine(`starting steiger language server using "${serverModule}"`);
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration(event => {
+      if (event.affectsConfiguration('steiger.languageServerPath')) {
+        void vscode.window
+          .showInformationMessage(
+            'Steiger language server path changed. Reload the window to apply it.',
+            'Reload Window'
+          )
+          .then(choice => {
+            if (choice === 'Reload Window') {
+              void vscode.commands.executeCommand('workbench.action.reloadWindow');
+            }
+          });
+      }
+    })
+  );
+
   client.start().catch(err => {
-    output.appendLine(`Failed to start steiger language server: ${err}`);
+    const message = `Failed to start steiger language server: ${err instanceof Error ? err.message : String(err)}`;
+    output.appendLine(message);
+    void vscode.window
+      .showErrorMessage(message, 'Show Output')
+      .then(choice => {
+        if (choice === 'Show Output') {
+          output.show();
+        }
+      });
   });
 }
 

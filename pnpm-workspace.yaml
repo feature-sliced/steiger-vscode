@@ -2,4 +2,7 @@ allowBuilds:
   '@vscode/vsce-sign': true
   esbuild: true
   keytar: true
+minimumReleaseAge: 4320
+minimumReleaseAgeExclude:
+  - '@feature-sliced/language-server'
 shamefullyHoist: false
