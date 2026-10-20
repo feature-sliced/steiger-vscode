@@ -29,7 +29,6 @@
     "vue",
     "svelte"
   ],
-  "markdown": "github",
   "galleryBanner": {
     "color": "#0e1117",
     "theme": "dark"
@@ -73,6 +72,7 @@
     }
   },
   "scripts": {
+    "vscode:prepublish": "node esbuild.js --production",
     "build": "node esbuild.js --production",
     "dev": "node esbuild.js && code --extensionDevelopmentPath=\"$PWD\"",
     "package": "vsce package --no-dependencies"

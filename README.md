@@ -14,6 +14,3 @@ This is a language server extension for [steiger](https://github.com/feature-sli
 |---|---|---|
 | `steiger.languageServerPath` | `""` | Path to a custom language server module used instead of the bundled one. Relative paths are resolved against the workspace root. Leave empty to use the bundled server. Changing it requires a window reload. |
 | `steiger.trace.server` | `"off"` | Traces the communication between VS Code and the steiger language server. One of `off`, `messages`, or `verbose`. |
-
-
-## Development

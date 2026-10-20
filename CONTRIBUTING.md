@@ -8,7 +8,7 @@ Use [pnpm](https://pnpm.io), not npm or yarn. The repo is pinned with `pnpm-lock
 |---|---|
 | `pnpm build` | Production bundle (minified) of the extension and language server into `dist/`. |
 | `pnpm dev` | Build, then open VS Code with the extension loaded (Extension Development Host). |
-| `pnpm package` | Pack a `.vsix`. Run `pnpm build` first; dependencies are bundled by esbuild, hence `--no-dependencies`. |
+| `pnpm package` | Pack a `.vsix`. The production build runs automatically via the `vscode:prepublish` hook; dependencies are bundled by esbuild, hence `--no-dependencies`. |
 
 ## @feature-sliced/language-server
 
